@@ -1,0 +1,15 @@
+boto3==1.14.56
+botocore==1.17.56
+docutils==0.16
+jmespath==0.10.0
+lockfile==0.12.2
+luigi==3.0.1
+pdf2image==1.14.0
+Pillow==7.2.0
+pkg-resources==0.0.0
+python-daemon==2.2.4
+python-dateutil==2.8.1
+s3transfer==0.3.3
+six==1.15.0
+tornado==5.1.1
+urllib3==1.25.10
