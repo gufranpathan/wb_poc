@@ -15,7 +15,7 @@ Why does this file exist, and why not put this in __main__?
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
 """
 import argparse
-from .tasks import ImageToText,PdfToImage,ParseImage,AssemblyPdfToImage,PartParseImage
+from .tasks import ImageToText,PdfToImage,ParseImage,AssemblyPdfToImage,PartParseImage,PdfDownload
 import luigi
 import logging
 import multiprocessing
@@ -30,7 +30,7 @@ luigi.configuration.get_config().set('core', 'log_level', 'INFO')
 
 
 parser = argparse.ArgumentParser(description='Command description.')
-parser.add_argument("-a", "--assembly",required=True)
+parser.add_argument("-a", "--assembly",required=False)
 parser.add_argument("-t", "--part")
 parser.add_argument("-g", "--page")
 parser.add_argument("-d", "--dpi")
@@ -48,17 +48,28 @@ def main(args=None):
     #             workers=multiprocessing.cpu_count(),
     #             local_scheduler=True)
 
-    luigi.build([AssemblyPdfToImage(assembly=int(args.assembly),
-                                    start_part=int(args.start_part),
-                                    end_part=int(args.end_part))],
-                workers=3,
-                local_scheduler=True)
-    # luigi.build([PartParseImage(assembly=int(args.assembly),
+    # luigi.build([AssemblyPdfToImage(assembly=int(args.assembly),
     #                                 start_part=int(args.start_part),
     #                                 end_part=int(args.end_part))],
-    #
-    #             #workers=multiprocessing.cpu_count(),
+    #             workers=6,
     #             local_scheduler=True)
+
+    for part in range(int(args.start_part),int(args.end_part)+1):
+        luigi.build([PartParseImage(assembly=int(args.assembly),
+                                        start_part=int(part),
+                                        end_part=int(part))],
+
+                    workers=3,
+                    local_scheduler=True)
+    # for part in range(int(args.start_part),int(args.end_part)+1):
+    #     luigi.build([PdfDownload(assembly=int(args.assembly),
+    #                                     part=int(part))],
+    #
+    #                 # workers=2,
+    #                 local_scheduler=True)
+
+
+
 
     # luigi.build([ParseImage(assembly=int(args.assembly),
     #                          part=int(args.part),
