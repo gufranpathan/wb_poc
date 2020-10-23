@@ -2,14 +2,16 @@
 library(dplyr)
 library(readr)
 library(stringr)
-voter_files <- list.files("data/kaliaganj/parsed/",full.names = TRUE)
-file_matches <- str_match(voter_files,"data/kaliaganj/parsed/ACNo_34_PartNo_(\\d+)_Page(\\d+)_(\\d+).csv")
+voter_files <- list.files("data/rr_nagar/parsed/assembly=154/",
+                          full.names = TRUE,recursive = TRUE)
+
+# file_matches <- str_match(voter_files,"data/kaliaganj/parsed/ACNo_34_PartNo_(\\d+)_Page(\\d+)_(\\d+).csv")
 
 voter_file_df <- data.frame(
   filename=voter_files,
-  part_no=as.numeric(file_matches[,2]),
-  page_no=as.numeric(file_matches[,3]),
-  dpi=as.numeric(file_matches[,4]),
+  # part_no=as.numeric(file_matches[,2]),
+  # page_no=as.numeric(file_matches[,3]),
+  # dpi=as.numeric(file_matches[,4]),
   stringsAsFactors = FALSE
 )
 
@@ -17,20 +19,23 @@ df_list <- list()
 for(i in 1:nrow(voter_file_df)){
   print(i)
   tmp <- read_csv(voter_file_df$filename[i])
-  tmp$house <- as.character(tmp$house) 
+  tmp$voter_id <- as.character(tmp$voter_id) 
+  
+  tmp$house_number <- as.character(tmp$house_number) 
   tmp$age <- as.character(tmp$age) 
   
-  tmp$part_no <- voter_file_df$part_no[i] 
-  tmp$page_no <- voter_file_df$page_no[i] 
-  tmp$dpi <- voter_file_df$dpi[i] 
+  # tmp$part_no <- voter_file_df$part_no[i] 
+  # tmp$page_no <- voter_file_df$page_no[i] 
+  # tmp$dpi <- voter_file_df$dpi[i] 
   df_list[[i]] <- tmp
   
 }
 
 df <- bind_rows(df_list)
-write_excel_csv(df,'data/consolidated.csv')
+write_excel_csv(df,'data/rr_nagar/rr_nagar_31booths.csv',na="")
 
-
+booth_summary <- df %>% group_by(part) %>% 
+  summarize(voters=n())
 d200 <- df %>% filter(dpi==200)
 d500 <- df %>% filter(dpi==500)
 

@@ -1,21 +1,11 @@
 library(stringr)
 library(dplyr)
 library(readr)
-df <- read.csv("data/kaliaganj/analysis/consolidated_df_transliterated.csv",stringsAsFactors = FALSE,
-               encoding = 'UTF-8',na.strings = "")
-df <- df[complete.cases(df),]
+# df <- read.csv("data/kaliaganj/analysis/consolidated_df_transliterated.csv",stringsAsFactors = FALSE,
+#                encoding = 'UTF-8',na.strings = "")
+# df <- df[complete.cases(df),]
 # Split name
 name_split <- str_split(df$name," ",simplify = TRUE)
-df$first_name_ben <- name_split[,1]
-df$middle_name_ben <- NA
-df$last_name_ben <- NA
-two_names <- name_split[,3]==""
-df$middle_name_ben[!two_names] <- name_split[,2][!two_names]
-df$last_name_ben[two_names] <- name_split[,2][two_names]
-df$last_name_ben[!two_names] <- name_split[,3][!two_names]
-
-
-name_split <- str_split(df$name_english," ",simplify = TRUE)
 df$first_name <- name_split[,1]
 df$middle_name <- NA
 df$last_name <- NA
@@ -24,22 +14,43 @@ df$middle_name[!two_names] <- name_split[,2][!two_names]
 df$last_name[two_names] <- name_split[,2][two_names]
 df$last_name[!two_names] <- name_split[,3][!two_names]
 
+rel_name_split <- str_split(df$rel_name," ",simplify = TRUE)
+df$first_rel_name <- rel_name_split[,1]
+df$middle_rel_name <- NA
+df$last_rel_name <- NA
+two_rel_names <- rel_name_split[,3]==""
+df$middle_rel_name[!two_rel_names] <- rel_name_split[,2][!two_rel_names]
+df$last_rel_name[two_rel_names] <- rel_name_split[,2][two_rel_names]
+df$last_rel_name[!two_rel_names] <- rel_name_split[,3][!two_rel_names]
+
+df$city <- "Bangalore"
+df$state <- "Karnataka"
+
+# name_split <- str_split(df$name_english," ",simplify = TRUE)
+# df$first_name <- name_split[,1]
+# df$middle_name <- NA
+# df$last_name <- NA
+# two_names <- name_split[,3]==""
+# df$middle_name[!two_names] <- name_split[,2][!two_names]
+# df$last_name[two_names] <- name_split[,2][two_names]
+# df$last_name[!two_names] <- name_split[,3][!two_names]
+# 
 
 
 # Split rel_name
-rel_name_split <- str_split(df$rel_name_english," ",simplify = TRUE)
-df$first_name_rel <- rel_name_split[,1]
-df$middle_name_rel <- NA
-df$last_name_rel <- NA
-two_names_rel <- rel_name_split[,3]==""
-df$middle_name_rel[!two_names_rel] <- rel_name_split[,2][!two_names_rel]
-df$last_name_rel[two_names_rel] <- rel_name_split[,2][two_names_rel]
-df$last_name_rel[!two_names_rel] <- rel_name_split[,3][!two_names_rel]
-View(df)
+# rel_name_split <- str_split(df$rel_name_english," ",simplify = TRUE)
+# df$first_name_rel <- rel_name_split[,1]
+# df$middle_name_rel <- NA
+# df$last_name_rel <- NA
+# two_names_rel <- rel_name_split[,3]==""
+# df$middle_name_rel[!two_names_rel] <- rel_name_split[,2][!two_names_rel]
+# df$last_name_rel[two_names_rel] <- rel_name_split[,2][two_names_rel]
+# df$last_name_rel[!two_names_rel] <- rel_name_split[,3][!two_names_rel]
+# View(df)
 
 
 # name analysis
-last_names <- df %>% group_by(last_name) %>% 
+last_names <- df %>% group_by(last_name_ben) %>% 
   summarize(people=n()) %>% 
   arrange(desc(people)) %>% 
   mutate(cumulative_people=cumsum(people))
@@ -47,7 +58,7 @@ last_names$cum_per <- last_names$cumulative_people/sum(last_names$people)
 View(last_names)
 sum(last_names$people)
 # write.csv(last_names,"data/kaliaganj/analysis/last_names.csv",row.names = FALSE)
-# write_excel_csv(last_names,"last_names.csv")
+write_excel_csv(last_names,"data/aurangabad/last_names.csv")
 
 #Map religion back
 
